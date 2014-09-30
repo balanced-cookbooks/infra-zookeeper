@@ -5,8 +5,6 @@ from boto import ec2, exception
 
 
 region = os.environ.get('AWS_REGION', 'us-east-1')
-aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
 aws.cxn.activate(profile_name='poundpay', default_region=region)
 inventory = ansible.AWSRemoteInventory(
@@ -24,9 +22,8 @@ inventory = ansible.AWSRemoteInventory(
     ],
 )
 
-def get_instance_indices(region, aws_access_key_id, aws_secret_access_key):
-#    import ipdb; ipdb.set_trace()
-    conn = ec2.connect_to_region(region,aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
+def get_instance_indices(region):
+    conn = ec2.connect_to_region(region)
     rinstances = conn.get_all_instances()
     output = {}
     id = 1
@@ -42,6 +39,6 @@ def get_instance_indices(region, aws_access_key_id, aws_secret_access_key):
 
 if __name__ == '__main__':
     result = inventory.all()
-    result['_meta']['hostvars'] = dict(get_instance_indices(region, aws_access_key_id, aws_secret_access_key))
+    result['_meta']['hostvars'] = dict(get_instance_indices(region))
     print json.dumps(result, indent=4, sort_keys=True)
 
